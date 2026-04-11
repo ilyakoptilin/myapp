@@ -4,6 +4,7 @@ import RouteVisualization from './components/RouteVisualization'; // Твоя к
 import CalculationPage from './components/CalculationPage';       // Твой калькулятор
 import './App.css';
 import { Client } from './pages/TempPage/klient'
+import Dash from './pages/TempPage/dash'
 
 function Navigation() {
   const location = useLocation();
@@ -30,6 +31,7 @@ function App() {
             <Route path="/calculation" element={<CalculationPage />} />
             <Route path='/test' element={<TempPage/>}/>
             <Route path='/cl' element={<Client/>}/>
+            <Route path='/' element={<Dash/>}/>
           </Routes>
         </div>
       </div>
