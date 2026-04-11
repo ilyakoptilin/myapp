@@ -5,6 +5,9 @@ import CalculationPage from './components/CalculationPage';       // Твой к
 import './App.css';
 import { Client } from './pages/TempPage/klient'
 import Dash from './pages/TempPage/dash'
+import  AlyaPage  from './pages/TempPage/alya'
+import  RailwayTariffCalculator  from './pages/TempPage/formula'
+
 
 function Navigation() {
   const location = useLocation();
@@ -31,6 +34,8 @@ function App() {
             <Route path="/calculation" element={<CalculationPage />} />
             <Route path='/test' element={<TempPage/>}/>
             <Route path='/cl' element={<Client/>}/>
+            <Route path='/aleksandra' element={<AlyaPage/>}/>
+            <Route path='/formula' element={<RailwayTariffCalculator/>}/>
             <Route path='/' element={<Dash/>}/>
           </Routes>
         </div>
