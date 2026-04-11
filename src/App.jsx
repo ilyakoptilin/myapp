@@ -3,6 +3,7 @@ import { TempPage } from './pages/TempPage/TempPage'
 import RouteVisualization from './components/RouteVisualization'; // Твоя карта
 import CalculationPage from './components/CalculationPage';       // Твой калькулятор
 import './App.css';
+import { Client } from './pages/TempPage/klient'
 
 function Navigation() {
   const location = useLocation();
@@ -28,6 +29,7 @@ function App() {
             <Route path="/map" element={<RouteVisualization />} />
             <Route path="/calculation" element={<CalculationPage />} />
             <Route path='/test' element={<TempPage/>}/>
+            <Route path='/cl' element={<Client/>}/>
           </Routes>
         </div>
       </div>
