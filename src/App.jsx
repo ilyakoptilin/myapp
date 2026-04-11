@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { TempPage } from './pages/TempPage/TempPage'
 import RouteVisualization from './components/RouteVisualization'; // Твоя карта
 import CalculationPage from './components/CalculationPage';       // Твой калькулятор
@@ -21,18 +21,17 @@ function Navigation() {
 
 function App() {
   return (
-    <Router>
       <div className="app-container">
         <Navigation />
         <div className="main-content">
           <Routes>
-            <Route path="/" element={<RouteVisualization />} />
+            <Route path="/map" element={<RouteVisualization />} />
             <Route path="/calculation" element={<CalculationPage />} />
             <Route path='/test' element={<TempPage/>}/>
           </Routes>
         </div>
       </div>
-    </Router>
+
   );
 }
 
