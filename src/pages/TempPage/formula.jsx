@@ -22,8 +22,8 @@ const RailwayTariffCalculator = () => {
   const [inflationCoeff, setInflationCoeff] = useState(1.0);
 
   // Состояния для отображения секций
-  const [showFormula, setShowFormula] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
+  const [isFormulaOpen, setIsFormulaOpen] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   // Коэффициент KL
   const calculateKL = (L) => {
@@ -81,10 +81,28 @@ const RailwayTariffCalculator = () => {
     return new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
   };
 
-  // Стили
+  // Иконка стрелки
+  const ChevronIcon = ({ expanded }) => (
+    <svg 
+      style={{ 
+        width: '16px', 
+        height: '16px', 
+        transition: 'transform 0.2s',
+        transform: expanded ? 'rotate(180deg)' : 'rotate(0)',
+        display: 'inline-block'
+      }} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2"
+    >
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  );
+
   const styles = {
     page: {
-      minHeight: '100vh',
+      minHeight: '300vh',
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
       background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
       color: '#1e293b',
@@ -112,102 +130,13 @@ const RailwayTariffCalculator = () => {
       fontWeight: '400',
       maxWidth: '600px'
     },
-    section: {
-      background: '#ffffff',
-      borderRadius: '16px',
-      padding: '32px',
-      marginBottom: '24px',
-      border: '1px solid #e2e8f0',
-      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)',
-      textAlign: 'left'
-    },
-    sectionTitle: {
-      fontSize: '0.875rem',
-      fontWeight: '600',
-      color: '#475569',
-      marginBottom: '24px',
-      paddingBottom: '16px',
-      borderBottom: '1px solid #f1f5f9',
-      textTransform: 'uppercase',
-      letterSpacing: '0.05em'
-    },
-    grid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-      gap: '32px'
-    },
-    formGroup: {
-      marginBottom: '24px'
-    },
-    label: {
-      display: 'block',
-      fontSize: '0.8125rem',
-      fontWeight: '600',
-      color: '#334155',
-      marginBottom: '10px',
-      letterSpacing: '0.02em'
-    },
-    input: {
-      width: '100%',
-      padding: '14px 16px',
-      fontSize: '0.9375rem',
-      border: '1px solid #cbd5e1',
-      borderRadius: '10px',
-      background: '#ffffff',
-      color: '#0f172a',
-      outline: 'none',
-      transition: 'border-color 0.15s, box-shadow 0.15s',
-      boxSizing: 'border-box'
-    },
-    select: {
-      width: '100%',
-      padding: '14px 16px',
-      fontSize: '0.9375rem',
-      border: '1px solid #cbd5e1',
-      borderRadius: '10px',
-      background: '#ffffff',
-      color: '#0f172a',
-      outline: 'none',
-      cursor: 'pointer',
-      boxSizing: 'border-box'
-    },
-    helper: {
-      fontSize: '0.8125rem',
-      color: '#94a3b8',
-      marginTop: '8px',
-      lineHeight: '1.5'
-    },
-    infoCard: {
-      background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-      borderRadius: '12px',
-      padding: '20px',
-      marginTop: '8px',
-      border: '1px solid #e2e8f0'
-    },
-    infoLabel: {
-      fontSize: '0.8125rem',
-      fontWeight: '600',
-      color: '#475569',
-      marginBottom: '6px'
-    },
-    infoValue: {
-      fontSize: '1.5rem',
-      fontWeight: '700',
-      color: '#1e3a8a'
-    },
-    infoFormula: {
-      fontSize: '0.75rem',
-      color: '#64748b',
-      marginTop: '6px',
-      fontFamily: 'ui-monospace, SFMono-Regular, monospace'
-    },
     formulaCard: {
       background: '#ffffff',
       borderRadius: '16px',
       border: '1px solid #e2e8f0',
       boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
       overflow: 'hidden',
-      marginBottom: '24px'
+      marginBottom: '32px'
     },
     formulaHeader: {
       padding: '20px 32px',
@@ -253,80 +182,193 @@ const RailwayTariffCalculator = () => {
       borderRadius: '10px',
       border: '1px solid #e2e8f0'
     },
+    controlPanel: {
+      background: '#ffffff',
+      borderRadius: '16px',
+      padding: '32px',
+      marginBottom: '32px',
+      border: '1px solid #e2e8f0',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)'
+    },
+    sectionTitle: {
+      fontSize: '0.875rem',
+      fontWeight: '600',
+      color: '#475569',
+      marginBottom: '24px',
+      paddingBottom: '16px',
+      borderBottom: '1px solid #f1f5f9',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em'
+    },
+    grid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+      gap: '32px'
+    },
+    formGroup: {
+      marginBottom: '24px'
+    },
+    label: {
+      display: 'block',
+      fontSize: '0.8125rem',
+      fontWeight: '600',
+      color: '#334155',
+      marginBottom: '10px',
+      letterSpacing: '0.02em'
+    },
+    input: {
+      width: '100%',
+      padding: '12px 16px',
+      fontSize: '0.9375rem',
+      border: '1px solid #cbd5e1',
+      borderRadius: '10px',
+      background: '#ffffff',
+      color: '#0f172a',
+      outline: 'none',
+      transition: 'border-color 0.15s, box-shadow 0.15s',
+      boxSizing: 'border-box'
+    },
+    select: {
+      width: '100%',
+      padding: '12px 16px',
+      fontSize: '0.9375rem',
+      border: '1px solid #cbd5e1',
+      borderRadius: '10px',
+      background: '#ffffff',
+      color: '#0f172a',
+      outline: 'none',
+      cursor: 'pointer',
+      boxSizing: 'border-box'
+    },
+    helper: {
+      fontSize: '0.75rem',
+      color: '#94a3b8',
+      marginTop: '6px',
+      lineHeight: '1.4'
+    },
+    infoCard: {
+      background: '#f8fafc',
+      borderRadius: '12px',
+      padding: '16px',
+      marginTop: '12px',
+      border: '1px solid #e2e8f0'
+    },
+    infoLabel: {
+      fontSize: '0.75rem',
+      fontWeight: '600',
+      color: '#475569',
+      marginBottom: '6px',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em'
+    },
+    infoValue: {
+      fontSize: '1.25rem',
+      fontWeight: '700',
+      color: '#1e3a8a'
+    },
+    infoFormula: {
+      fontSize: '0.7rem',
+      color: '#64748b',
+      marginTop: '4px',
+      fontFamily: 'ui-monospace, SFMono-Regular, monospace'
+    },
+    inflationHighlight: {
+      background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+      border: '1px solid #f59e0b',
+      borderRadius: '10px',
+      padding: '12px 16px',
+      marginTop: '12px'
+    },
+    inflationLabel: {
+      fontSize: '0.75rem',
+      fontWeight: '600',
+      color: '#92400e',
+      marginBottom: '6px'
+    },
+    inflationValue: {
+      fontSize: '1rem',
+      fontWeight: '700',
+      color: '#b45309'
+    },
     resultCard: {
       background: '#ffffff',
       borderRadius: '20px',
       border: '1px solid #e2e8f0',
       boxShadow: '0 4px 14px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04)',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      marginBottom: '32px'
     },
     resultHeader: {
       background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
       padding: '24px 32px'
     },
     resultTitle: {
-      fontSize: '1.125rem',
+      fontSize: '1rem',
       fontWeight: '600',
-      color: '#ffffff'
+      color: '#ffffff',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em'
     },
     resultBody: {
       padding: '32px'
     },
     kpiGrid: {
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
       gap: '20px',
       marginBottom: '32px'
     },
     kpiCard: {
       background: '#f8fafc',
       borderRadius: '14px',
-      padding: '24px',
+      padding: '20px',
       border: '1px solid #e2e8f0',
-      transition: 'transform 0.15s, box-shadow 0.15s'
+      textAlign: 'center'
     },
     kpiLabel: {
-      fontSize: '0.8125rem',
+      fontSize: '0.75rem',
       color: '#475569',
       fontWeight: '600',
-      marginBottom: '12px',
-      lineHeight: '1.4'
+      marginBottom: '10px',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em'
     },
     kpiValue: {
-      fontSize: '2rem',
+      fontSize: '1.5rem',
       fontWeight: '800',
       color: '#0f172a',
-      lineHeight: '1.1'
+      lineHeight: '1.2',
+      marginBottom: '6px'
     },
     kpiNote: {
-      fontSize: '0.75rem',
+      fontSize: '0.7rem',
       color: '#94a3b8',
-      marginTop: '10px'
+      marginTop: '8px'
     },
     totalCard: {
       background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
       borderRadius: '14px',
-      padding: '28px',
-      textAlign: 'left'
+      padding: '24px',
+      textAlign: 'center'
     },
     totalLabel: {
-      fontSize: '0.8125rem',
+      fontSize: '0.75rem',
       fontWeight: '600',
       color: '#94a3b8',
-      marginBottom: '12px',
+      marginBottom: '10px',
       textTransform: 'uppercase',
       letterSpacing: '0.05em'
     },
     totalValue: {
-      fontSize: '2.25rem',
+      fontSize: '1.75rem',
       fontWeight: '800',
       color: '#ffffff',
-      lineHeight: '1.1'
+      lineHeight: '1.2'
     },
     totalNote: {
-      fontSize: '0.8125rem',
+      fontSize: '0.7rem',
       color: '#cbd5e1',
-      marginTop: '10px'
+      marginTop: '8px'
     },
     detailsBtn: {
       fontSize: '0.875rem',
@@ -344,43 +386,19 @@ const RailwayTariffCalculator = () => {
       background: '#f8fafc',
       borderRadius: '10px',
       padding: '20px',
-      fontSize: '0.8125rem',
+      fontSize: '0.75rem',
       fontFamily: 'ui-monospace, SFMono-Regular, monospace',
       color: '#334155',
-      lineHeight: '2',
+      lineHeight: '1.8',
       overflowX: 'auto'
     },
     footer: {
-      marginTop: '32px',
-      paddingTop: '24px',
+      marginTop: '24px',
+      paddingTop: '20px',
       borderTop: '1px solid #e2e8f0',
-      fontSize: '0.8125rem',
+      fontSize: '0.75rem',
       color: '#64748b',
-      lineHeight: '1.8'
-    },
-    inflationHighlight: {
-      background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-      border: '1px solid #f59e0b',
-      borderRadius: '10px',
-      padding: '16px 20px',
-      marginTop: '16px'
-    },
-    inflationLabel: {
-      fontSize: '0.8125rem',
-      fontWeight: '600',
-      color: '#92400e',
-      marginBottom: '8px'
-    },
-    inflationValue: {
-      fontSize: '1.25rem',
-      fontWeight: '700',
-      color: '#b45309'
-    },
-    chevron: {
-      width: '16px',
-      height: '16px',
-      transition: 'transform 0.2s',
-      display: 'inline-block'
+      lineHeight: '1.6'
     }
   };
 
@@ -392,19 +410,6 @@ const RailwayTariffCalculator = () => {
     document.head.appendChild(link);
     return () => document.head.removeChild(link);
   }, []);
-
-  // SVG иконка стрелки
-  const ChevronIcon = ({ expanded }) => (
-    <svg 
-      style={{ ...styles.chevron, transform: expanded ? 'rotate(180deg)' : 'rotate(0)' }} 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2"
-    >
-      <path d="M6 9l6 6 6-6" />
-    </svg>
-  );
 
   return (
     <div style={styles.page}>
@@ -419,27 +424,27 @@ const RailwayTariffCalculator = () => {
           </p>
         </header>
 
-        {/* Формула (сворачиваемая) */}
-        <section style={styles.formulaCard}>
+        {/* Сворачиваемый блок с формулой */}
+        <div style={styles.formulaCard}>
           <div 
             style={styles.formulaHeader}
-            onClick={() => setShowFormula(!showFormula)}
+            onClick={() => setIsFormulaOpen(!isFormulaOpen)}
           >
             <div style={styles.formulaTitle}>
               Формула расчёта
-              <ChevronIcon expanded={showFormula} />
+              <ChevronIcon expanded={isFormulaOpen} />
             </div>
             <button 
               style={styles.toggleBtn}
-              onClick={(e) => { e.stopPropagation(); setShowFormula(!showFormula); }}
-              onMouseOver={(e) => e.target.style.background = '#e2e8f0'}
-              onMouseOut={(e) => e.target.style.background = 'transparent'}
+              onClick={(e) => { e.stopPropagation(); setIsFormulaOpen(!isFormulaOpen); }}
+              onMouseEnter={(e) => e.target.style.background = '#e2e8f0'}
+              onMouseLeave={(e) => e.target.style.background = 'transparent'}
             >
-              {showFormula ? 'Свернуть' : 'Развернуть'}
+              {isFormulaOpen ? 'Свернуть' : 'Развернуть'}
             </button>
           </div>
           
-          {showFormula && (
+          {isFormulaOpen && (
             <div style={styles.formulaBody}>
               <div style={styles.formulaBlock}>
                 <div style={{ marginBottom: '8px' }}>
@@ -454,160 +459,158 @@ const RailwayTariffCalculator = () => {
                 <div>
                   Тариф_порожний = Ставка_ось × N_осей × (L × 0,6) × K_напр × K_марш
                 </div>
-                <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #e2e8f0', fontSize: '0.8125rem', color: '#64748b' }}>
+                <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #e2e8f0', fontSize: '0.75rem', color: '#64748b' }}>
                   <div>Параметры: A=18 169 ₽/ваг, B_const=69,165, B_т=0,2880, A_в=8 991 ₽/ваг, B_в=8,803 ₽/вагоно-км</div>
                   <div style={{ marginTop: '4px' }}>KL — коэффициент дальности, K_инфляция — пользовательский коэффициент индексации</div>
                 </div>
               </div>
             </div>
           )}
-        </section>
+        </div>
 
         {/* Панель управления */}
-        <div style={styles.grid}>
+        <div style={styles.controlPanel}>
+          <div style={styles.sectionTitle}>Параметры расчёта</div>
           
-          {/* Параметры перевозки */}
-          <section style={styles.section}>
-            <div style={styles.sectionTitle}>Параметры перевозки</div>
-            
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Расстояние перевозки (L), км</label>
-              <input
-                type="number"
-                value={distance}
-                onChange={(e) => setDistance(Number(e.target.value))}
-                style={styles.input}
-                onFocus={(e) => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'; }}
-                onBlur={(e) => { e.target.style.borderColor = '#cbd5e1'; e.target.style.boxShadow = 'none'; }}
-              />
-              <p style={styles.helper}>Расстояние от станции отправления до станции назначения</p>
+          <div style={styles.grid}>
+            {/* Левая колонка */}
+            <div>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Расстояние перевозки (L), км</label>
+                <input
+                  type="number"
+                  value={distance}
+                  onChange={(e) => setDistance(Number(e.target.value))}
+                  style={styles.input}
+                  onFocus={(e) => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#cbd5e1'; e.target.style.boxShadow = 'none'; }}
+                />
+                <p style={styles.helper}>Расстояние от станции отправления до станции назначения</p>
+              </div>
+
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Масса груза (P), тонн</label>
+                <input
+                  type="number"
+                  value={weight}
+                  onChange={(e) => setWeight(Number(e.target.value))}
+                  style={styles.input}
+                  onFocus={(e) => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#cbd5e1'; e.target.style.boxShadow = 'none'; }}
+                />
+                <p style={styles.helper}>Общая масса груза, размещённого в вагоне</p>
+              </div>
+
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Тарифный класс груза</label>
+                <select
+                  value={tariffClass}
+                  onChange={(e) => setTariffClass(Number(e.target.value))}
+                  style={styles.select}
+                >
+                  <option value={1}>1-й класс: уголь, руда, стройматериалы (коэф. 0,55–0,75)</option>
+                  <option value={2}>2-й класс: нефть, зерно, лес (коэф. 1,0)</option>
+                  <option value={3}>3-й класс: химия, автомобили, металлы (коэф. 1,54–1,74)</option>
+                </select>
+              </div>
+
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Количество осей вагона</label>
+                <select
+                  value={axles}
+                  onChange={(e) => setAxles(Number(e.target.value))}
+                  style={styles.select}
+                >
+                  <option value={4}>4-осный (стандартный)</option>
+                  <option value={6}>6-осный</option>
+                  <option value={8}>8-осный</option>
+                </select>
+                <p style={styles.helper}>Влияет на расчёт стоимости порожнего пробега</p>
+              </div>
             </div>
 
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Масса груза (P), тонн</label>
-              <input
-                type="number"
-                value={weight}
-                onChange={(e) => setWeight(Number(e.target.value))}
-                style={styles.input}
-                onFocus={(e) => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'; }}
-                onBlur={(e) => { e.target.style.borderColor = '#cbd5e1'; e.target.style.boxShadow = 'none'; }}
-              />
-              <p style={styles.helper}>Общая масса груза, размещённого в вагоне</p>
-            </div>
+            {/* Правая колонка */}
+            <div>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Коэффициент направления (K_напр)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={routeCoeff}
+                  onChange={(e) => setRouteCoeff(Number(e.target.value))}
+                  style={styles.input}
+                  onFocus={(e) => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#cbd5e1'; e.target.style.boxShadow = 'none'; }}
+                />
+                <p style={styles.helper}>Таблица №3. Калининградская ж/д: 0,27–0,93. Стандарт: 1,0</p>
+              </div>
 
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Тарифный класс груза</label>
-              <select
-                value={tariffClass}
-                onChange={(e) => setTariffClass(Number(e.target.value))}
-                style={styles.select}
-              >
-                <option value={1}>1-й класс: уголь, руда, стройматериалы (коэф. 0,55–0,75)</option>
-                <option value={2}>2-й класс: нефть, зерно, лес (коэф. 1,0)</option>
-                <option value={3}>3-й класс: химия, автомобили, металлы (коэф. 1,54–1,74)</option>
-              </select>
-            </div>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Коэффициент для отдельных грузов (K_спец)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={specialCoeff}
+                  onChange={(e) => setSpecialCoeff(Number(e.target.value))}
+                  style={styles.input}
+                  onFocus={(e) => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#cbd5e1'; e.target.style.boxShadow = 'none'; }}
+                />
+                <p style={styles.helper}>Таблица №4. Удобрения: 0,357, уголь: 0,4–0,895. Стандарт: 1,0</p>
+              </div>
 
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Количество осей вагона</label>
-              <select
-                value={axles}
-                onChange={(e) => setAxles(Number(e.target.value))}
-                style={styles.select}
-              >
-                <option value={4}>4-осный (стандартный)</option>
-                <option value={6}>6-осный</option>
-                <option value={8}>8-осный</option>
-              </select>
-              <p style={styles.helper}>Влияет на расчёт стоимости порожнего пробега</p>
-            </div>
-          </section>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Коэффициент технологии перевозки (K_марш)</label>
+                <select
+                  value={trainTypeCoeff}
+                  onChange={(e) => setTrainTypeCoeff(Number(e.target.value))}
+                  style={styles.select}
+                >
+                  <option value={1.0}>Повагонная отправка (1 вагон) — 1,0</option>
+                  <option value={0.97}>Групповая отправка (6–20 вагонов) — 0,97</option>
+                  <option value={0.95}>Отправительский маршрут — 0,85–0,95</option>
+                  <option value={1.08}>Повагонная (до 510 км) — 1,08</option>
+                </select>
+                <p style={styles.helper}>Таблица №5. Скидка до 15% для маршрутных отправок</p>
+              </div>
 
-          {/* Коэффициенты */}
-          <section style={styles.section}>
-            <div style={styles.sectionTitle}>Корректирующие коэффициенты</div>
-            
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Коэффициент направления (K_напр)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={routeCoeff}
-                onChange={(e) => setRouteCoeff(Number(e.target.value))}
-                style={styles.input}
-                onFocus={(e) => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'; }}
-                onBlur={(e) => { e.target.style.borderColor = '#cbd5e1'; e.target.style.boxShadow = 'none'; }}
-              />
-              <p style={styles.helper}>Таблица №3. Калининградская ж/д: 0,27–0,93. Стандарт: 1,0</p>
-            </div>
-
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Коэффициент для отдельных грузов (K_спец)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={specialCoeff}
-                onChange={(e) => setSpecialCoeff(Number(e.target.value))}
-                style={styles.input}
-                onFocus={(e) => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'; }}
-                onBlur={(e) => { e.target.style.borderColor = '#cbd5e1'; e.target.style.boxShadow = 'none'; }}
-              />
-              <p style={styles.helper}>Таблица №4. Удобрения: 0,357, уголь: 0,4–0,895. Стандарт: 1,0</p>
-            </div>
-
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Коэффициент технологии перевозки (K_марш)</label>
-              <select
-                value={trainTypeCoeff}
-                onChange={(e) => setTrainTypeCoeff(Number(e.target.value))}
-                style={styles.select}
-              >
-                <option value={1.0}>Повагонная отправка (1 вагон) — 1,0</option>
-                <option value={0.97}>Групповая отправка (6–20 вагонов) — 0,97</option>
-                <option value={0.95}>Отправительский маршрут — 0,85–0,95</option>
-                <option value={1.08}>Повагонная (до 510 км) — 1,08</option>
-              </select>
-              <p style={styles.helper}>Таблица №5. Скидка до 15% для маршрутных отправок</p>
-            </div>
-
-            {/* Коэффициент инфляции */}
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Коэффициент инфляции (индексация)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={inflationCoeff}
-                onChange={(e) => setInflationCoeff(Number(e.target.value))}
-                style={styles.input}
-                onFocus={(e) => { e.target.style.borderColor = '#f59e0b'; e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)'; }}
-                onBlur={(e) => { e.target.style.borderColor = '#cbd5e1'; e.target.style.boxShadow = 'none'; }}
-              />
-              <p style={styles.helper}>Коэффициент для индексации тарифа (1,0 — без индексации, 1,12 — +12%)</p>
-              
-              <div style={styles.inflationHighlight}>
-                <div style={styles.inflationLabel}>Применяемая индексация</div>
-                <div style={styles.inflationValue}>
-                  {inflationCoeff === 1.0 ? 'Без индексации' : 
-                   inflationCoeff > 1 ? `+${((inflationCoeff - 1) * 100).toFixed(1)}%` : 
-                   `${((1 - inflationCoeff) * 100).toFixed(1)}% снижение`}
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Коэффициент инфляции (индексация)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={inflationCoeff}
+                  onChange={(e) => setInflationCoeff(Number(e.target.value))}
+                  style={styles.input}
+                  onFocus={(e) => { e.target.style.borderColor = '#f59e0b'; e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#cbd5e1'; e.target.style.boxShadow = 'none'; }}
+                />
+                <p style={styles.helper}>Коэффициент для индексации тарифа (1,0 — без индексации, 1,12 — +12%)</p>
+                
+                <div style={styles.inflationHighlight}>
+                  <div style={styles.inflationLabel}>Применяемая индексация</div>
+                  <div style={styles.inflationValue}>
+                    {inflationCoeff === 1.0 ? 'Без индексации' : 
+                     inflationCoeff > 1 ? `+${((inflationCoeff - 1) * 100).toFixed(1)}%` : 
+                     `${((1 - inflationCoeff) * 100).toFixed(1)}% снижение`}
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* KL коэффициент */}
-            <div style={styles.infoCard}>
-              <div style={styles.infoLabel}>Коэффициент дальности (KL)</div>
-              <div style={styles.infoValue}>{KL.toFixed(4)}</div>
-              <div style={styles.infoFormula}>
-                KL = 1,041 − 0,00006×L + 31/L (при 160 &lt; L &lt; 3000 км)
-              </div>
+          {/* KL коэффициент */}
+          <div style={styles.infoCard}>
+            <div style={styles.infoLabel}>Коэффициент дальности (KL)</div>
+            <div style={styles.infoValue}>{KL.toFixed(4)}</div>
+            <div style={styles.infoFormula}>
+              KL = 1,041 − 0,00006×L + 31/L (при 160 &lt; L &lt; 3000 км)
             </div>
-          </section>
+          </div>
         </div>
 
         {/* Результаты */}
-        <section style={styles.resultCard}>
+        <div style={styles.resultCard}>
           <div style={styles.resultHeader}>
             <div style={styles.resultTitle}>Результат расчёта</div>
           </div>
@@ -615,19 +618,19 @@ const RailwayTariffCalculator = () => {
           <div style={styles.resultBody}>
             <div style={styles.kpiGrid}>
               <div style={styles.kpiCard}>
-                <div style={styles.kpiLabel}>Тариф за инфраструктуру и локомотивную тягу</div>
+                <div style={styles.kpiLabel}>Тариф за инфраструктуру</div>
                 <div style={styles.kpiValue}>{formatNumber(totalTariffInfra)} ₽</div>
                 <div style={styles.kpiNote}>С учётом всех корректирующих коэффициентов</div>
               </div>
               <div style={styles.kpiCard}>
-                <div style={styles.kpiLabel}>Тариф за пользование вагоном общего парка</div>
+                <div style={styles.kpiLabel}>Тариф за пользование вагоном</div>
                 <div style={styles.kpiValue}>{formatNumber(tariffWagon)} ₽</div>
                 <div style={styles.kpiNote}>Базовая ставка для крытого вагона</div>
               </div>
               <div style={styles.kpiCard}>
-                <div style={styles.kpiLabel}>Тариф за порожний пробег (60% от расстояния)</div>
+                <div style={styles.kpiLabel}>Тариф за порожний пробег</div>
                 <div style={styles.kpiValue}>{formatNumber(tariffEmptyRun)} ₽</div>
-                <div style={styles.kpiNote}>Стимулирование обратной загрузки подвижного состава</div>
+                <div style={styles.kpiNote}>60% от расстояния, стимулирование обратной загрузки</div>
               </div>
               <div style={styles.totalCard}>
                 <div style={styles.totalLabel}>Итоговый доход РЖД с одного вагона</div>
@@ -640,15 +643,15 @@ const RailwayTariffCalculator = () => {
 
             {/* Детализация */}
             <button 
-              onClick={() => setShowDetails(!showDetails)}
+              onClick={() => setIsDetailsOpen(!isDetailsOpen)}
               style={styles.detailsBtn}
-              onMouseOver={(e) => e.target.style.color = '#1e40af'}
-              onMouseOut={(e) => e.target.style.color = '#1e3a8a'}
+              onMouseEnter={(e) => e.target.style.color = '#1e40af'}
+              onMouseLeave={(e) => e.target.style.color = '#1e3a8a'}
             >
-              {showDetails ? 'Скрыть детальный расчёт' : 'Показать детальный расчёт'}
+              {isDetailsOpen ? 'Скрыть детальный расчёт' : 'Показать детальный расчёт'}
             </button>
             
-            {showDetails && (
+            {isDetailsOpen && (
               <div style={styles.detailsContent}>
                 <div>KL = {KL.toFixed(4)} (расстояние: {distance} км)</div>
                 <div>K_класс = {classCoeff} ({tariffClass}-й класс груза)</div>
@@ -670,10 +673,10 @@ const RailwayTariffCalculator = () => {
               <div>Расчёт выполнен на основании Приказа ФАС России № 894/25 от 06.11.2025 г.</div>
               <div>Применена тарифная схема И1 и В3 для универсального крытого вагона общего парка.</div>
               <div>Фактическая стоимость перевозки может отличаться с учётом типа подвижного состава, габаритов груза, класса опасности и иных условий договора.</div>
-              <div style={{ marginTop: '8px', fontStyle: 'italic' }}>Коэффициент инфляции применяется пользователем самостоятельно для прогнозирования тарифов в будущих периодах.</div>
+              <div style={{ marginTop: '6px', fontStyle: 'italic' }}>Коэффициент инфляции применяется пользователем самостоятельно для прогнозирования тарифов в будущих периодах.</div>
             </div>
           </div>
-        </section>
+        </div>
 
       </div>
     </div>
